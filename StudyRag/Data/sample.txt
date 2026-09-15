@@ -1,0 +1,11 @@
+Dogs are social animals that have lived alongside humans for thousands of years. They are often valued for companionship, loyalty, and their ability to form strong bonds with people. Different breeds have different temperaments and exercise needs.
+
+SQL Server is a relational database management system developed by Microsoft. It stores data in tables and supports SQL for querying and modifying data. Indexes can improve query performance by helping SQL Server locate rows more efficiently.
+
+Dependency injection is a software design technique where an object receives the dependencies it needs rather than creating them itself. This can make code easier to test and reduce coupling between classes. In .NET applications, dependency injection is commonly used to provide services through constructors.
+
+The Earth travels around the Sun in an elliptical orbit. One complete orbit takes approximately 365.25 days. The Earth's axial tilt is responsible for the changing seasons.
+
+Retrieval-augmented generation, often called RAG, combines information retrieval with a language model. A system first retrieves relevant information from a collection of documents and then supplies that information to the language model as context. This can help the model answer questions using information that was not included in its original training data.
+
+Embeddings are numerical representations of data such as text. Text with similar meaning tends to produce embeddings that are close together in vector space. A RAG system can compare the embedding of a user's question with embeddings created from document chunks to find relevant information.
