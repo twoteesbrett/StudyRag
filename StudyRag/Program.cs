@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.AI;
 using OllamaSharp;
+using StudyRag.Helpers;
 using StudyRag.Models;
 using StudyRag.Services;
 
-//var ollamaUri = new Uri("http://192.168.1.11:11434");
-var ollamaUri = new Uri("http://localhost:11434");
+var ollamaUri = new Uri("http://192.168.1.11:11434");
+//var ollamaUri = new Uri("http://localhost:11434");
 
 IChatClient chatClient =
     new OllamaApiClient(
@@ -25,38 +26,57 @@ var retrievalService =
 var ragService =
     new RagService(chatClient);
 
-var textFileLoader = new TextFileLoader();
+var indexingService = new IndexingService(
+    new TextFileLoader(),
+    embeddingService);
 
-var text = await textFileLoader.LoadAsync(
+var chunks = await indexingService.IndexAsync(
     "Data/sample.txt");
 
-var documentTexts = TextChunker.Chunk(text);
-
-var chunks = new List<DocumentChunk>();
-
-foreach (var documentText in documentTexts)
+while (true)
 {
-    var embedding =
-        await embeddingService.GenerateAsync(documentText);
+    Console.Write("\nAsk a question (or type 'exit'): ");
+    var question = Console.ReadLine();
 
-    chunks.Add(new DocumentChunk {
-        Text = documentText,
-        Embedding = embedding
-    });
-}
+    if (question is null ||
+        question.Trim().Equals("exit", StringComparison.OrdinalIgnoreCase))
+    {
+        break;
+    }
 
-var question =
-    "What is dependency injection?";
+    if (string.IsNullOrWhiteSpace(question))
+    {
+        continue;
+    }
 
-var matches =
-    await retrievalService.FindBestMatchesAsync(
+    var matches = await retrievalService.FindBestMatchesAsync(
         question,
         chunks,
-        count: 2);
+        count: 3,
+        minSimilarity: 0.60f);
 
-var answer =
-    await ragService.AskAsync(
-        question,
-        matches);
+#if DEBUG
+    DebugConsole.WriteHeader("RETRIEVED CHUNKS");
+    DebugConsole.WriteLine($"Found {matches.Count} matching chunks.");
 
-Console.WriteLine(answer);
+    foreach (var match in matches)
+    {
+        DebugConsole.WriteLine(
+            $"Source: {match.Chunk.SourceFile}, chunk {match.Chunk.ChunkNumber}");
+        DebugConsole.WriteLine($"Similarity: {match.Similarity:F3}");
+        DebugConsole.WriteLine(match.Chunk.Text);
+        DebugConsole.WriteLine("");
+    }
+#endif
+
+    if (matches.Count == 0)
+    {
+        Console.WriteLine(
+            "No sufficiently relevant information was found.");
+        continue;
+    }
+
+    var answer = await ragService.AskAsync(question, matches);
+
+    Console.WriteLine($"\nAnswer:\n{answer}");
+}

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.AI;
+using StudyRag.Helpers;
 using StudyRag.Models;
 
 namespace StudyRag.Services;
@@ -11,10 +12,12 @@ public class RagService(IChatClient chatClient)
     {
         var contextText = string.Join(
             "\n\n",
-            context.Select(result => result.Chunk.Text));
+            context.Select(result =>
+                $"[{result.Chunk.SourceFile}, chunk {result.Chunk.ChunkNumber}]\n{result.Chunk.Text}"));
 
         var prompt = $"""
             Answer the question using only the context below.
+            Cite the supporting sources using their labels, for example [sample.txt, chunk 4].
 
             Context:
             {contextText}
@@ -23,6 +26,10 @@ public class RagService(IChatClient chatClient)
             {question}
             """;
 
+#if DEBUG
+        DebugConsole.WriteHeader("PROMPT");
+        DebugConsole.WriteLine(prompt);
+#endif
         var response = await chatClient.GetResponseAsync(prompt);
 
         return response.Text;
