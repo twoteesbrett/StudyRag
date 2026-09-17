@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: StudyRag",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build StudyRag",
+            "program": "${workspaceFolder}/StudyRag/bin/Debug/net10.0/StudyRag.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/StudyRag",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.AI;
 using StudyRag.Helpers;
 using StudyRag.Models;
 
@@ -17,7 +17,7 @@ public class RagService(IChatClient chatClient)
 
         var prompt = $"""
             Answer the question using only the context below.
-            Cite the supporting sources using their labels, for example [sample.txt, chunk 4].
+            Cite the supporting sources using their labels, for example [sample1.txt, chunk 4].
 
             Context:
             {contextText}

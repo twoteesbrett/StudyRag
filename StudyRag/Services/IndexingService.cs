@@ -6,6 +6,21 @@ public class IndexingService(
     TextFileLoader fileLoader,
     EmbeddingService embeddingService)
 {
+    public async Task<IReadOnlyList<DocumentChunk>> IndexDirectoryAsync(string directoryPath)
+    {
+        var paths = Directory.EnumerateFiles(directoryPath, "*.txt")
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase);
+            
+        var chunks = new List<DocumentChunk>();
+
+        foreach (var path in paths)
+        {
+            chunks.AddRange(await IndexAsync(path));
+        }
+
+        return chunks;
+    }
+
     public async Task<IReadOnlyList<DocumentChunk>> IndexAsync(
         string path)
     {

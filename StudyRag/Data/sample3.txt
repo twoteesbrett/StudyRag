@@ -1,0 +1,11 @@
+Git is a version control system that records changes to files. A commit captures a snapshot of tracked content, and a branch allows work to proceed along a separate line of development. Merging combines changes from different branches.
+
+A unit test checks a small piece of behaviour in isolation. Tests commonly arrange inputs, perform an action, and assert the expected result. Replacing external services with test doubles can make tests deterministic and allow them to run without network access.
+
+An HTTP request contains a method and a target address, and it can include headers and a body. GET requests retrieve a representation of a resource. A response includes a status code, with 200 indicating success and 404 indicating that the requested resource was not found.
+
+A database transaction groups operations into a single logical unit of work. Committing a transaction makes its changes permanent, while rolling it back cancels its changes. Transactions help keep related updates consistent when an operation fails.
+
+Caching stores data so that later requests can reuse it without repeating expensive work. An expiration time limits how long a cached value is retained. Cache invalidation removes or replaces a stored value when the underlying data changes.
+
+A queue follows first-in, first-out ordering: the first item added is the first item removed. A stack follows last-in, first-out ordering: the most recently added item is removed first. Queues are useful for processing waiting tasks, while stacks can track nested operations.

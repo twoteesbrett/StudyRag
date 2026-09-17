@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.AI;
 using OllamaSharp;
 using StudyRag.Helpers;
 using StudyRag.Models;
@@ -30,8 +30,23 @@ var indexingService = new IndexingService(
     new TextFileLoader(),
     embeddingService);
 
-var chunks = await indexingService.IndexAsync(
-    "Data/sample.txt");
+var dataDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
+
+if (args.Contains("--evaluate"))
+{
+    var evaluationChunks = await indexingService.IndexAsync(
+        Path.Combine(dataDirectory, "sample1.txt"));
+    await RetrievalEvaluation.RunAsync(retrievalService, evaluationChunks);
+    return;
+}
+
+var chunks = await indexingService.IndexDirectoryAsync(dataDirectory);
+
+if (chunks.Count == 0)
+{
+    Console.WriteLine("No text was found. Add .txt files to the Data folder and run again.");
+    return;
+}
 
 while (true)
 {
