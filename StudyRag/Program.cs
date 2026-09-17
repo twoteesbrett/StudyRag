@@ -32,6 +32,22 @@ var indexingService = new IndexingService(
 
 var dataDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
 
+if (args.Contains("--evaluate-class"))
+{
+    var evaluationChunks = await indexingService.IndexAsync(
+        Path.Combine(dataDirectory, "Evaluation", "class-material.txt"));
+    await RetrievalEvaluation.RunClassMaterialAsync(retrievalService, evaluationChunks);
+    return;
+}
+
+if (args.Contains("--evaluate-overlap"))
+{
+    var evaluationChunks = await indexingService.IndexAsync(
+        Path.Combine(dataDirectory, "Evaluation", "overlap.txt"));
+    await RetrievalEvaluation.RunOverlapAsync(retrievalService, evaluationChunks);
+    return;
+}
+
 if (args.Contains("--evaluate"))
 {
     var evaluationChunks = await indexingService.IndexAsync(

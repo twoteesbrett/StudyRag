@@ -1,0 +1,7 @@
+A transient service has a short dependency injection lifetime: the container creates a new instance each time the service is requested. Two resolutions of the same transient service produce different instances, even within one request.
+
+A scoped service has a dependency injection lifetime tied to a scope. The container reuses one instance within that scope and creates a different instance for a different scope. In a typical ASP.NET Core web application, each HTTP request has its own scope.
+
+A singleton service has a dependency injection lifetime tied to the container. The container reuses the same instance across scopes and HTTP requests. Because requests can access that instance concurrently, shared mutable state in a singleton needs thread-safe handling.
+
+Dependency injection supplies services to a class rather than requiring the class to construct them. Constructor injection makes these dependencies explicit and allows tests to supply substitutes. Service registration associates a service type with an implementation and a lifetime.

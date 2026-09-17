@@ -1,0 +1,45 @@
+Class-material baseline: five verbatim passages from the supplied test corpus.
+Source mapping and label rationale: evaluation/class-material.md
+
+Question (answerable): What health condition does Moana have, and what kind of healthcare provider does she want?
+Expected chunks: 5
+  Chunk 5: 0.755 (passes cutoff at 0.60)
+  Chunk 4: 0.601 (passes cutoff at 0.60)
+  Chunk 3: 0.562 (below cutoff at 0.60)
+  Chunk 1: 0.529 (below cutoff at 0.60)
+  Chunk 2: 0.417 (below cutoff at 0.60)
+
+Question (answerable): Compare Zara's and Tane's barriers to participating in healthcare. What specific support is suggested for each person?
+Expected chunks: 3, 4
+  Chunk 3: 0.689 (passes cutoff at 0.60)
+  Chunk 4: 0.680 (passes cutoff at 0.60)
+  Chunk 1: 0.630 (passes cutoff at 0.60)
+  Chunk 5: 0.593 (below cutoff at 0.60)
+  Chunk 2: 0.478 (below cutoff at 0.60)
+
+Question (unsupported): What exact dose of diabetes medication has Tane been prescribed?
+Expected chunks: none
+  Chunk 4: 0.591 (below cutoff at 0.60)
+  Chunk 5: 0.425 (below cutoff at 0.60)
+  Chunk 3: 0.390 (below cutoff at 0.60)
+  Chunk 2: 0.390 (below cutoff at 0.60)
+  Chunk 1: 0.377 (below cutoff at 0.60)
+
+Threshold comparison (top 3 after filtering):
+Cutoff  Precision  Recall  Exact cases  Unrelated empty  Unsupported empty
+0.40        37.5%  100.0%  0/3           0/0              0/1
+0.45        42.9%  100.0%  0/3           0/0              0/1
+0.50        42.9%  100.0%  0/3           0/0              0/1
+0.55        42.9%  100.0%  0/3           0/0              0/1
+0.60        60.0%  100.0%  1/3           0/0              1/1
+0.65       100.0%  100.0%  3/3           0/0              1/1
+0.70       100.0%   33.3%  2/3           0/0              1/1
+
+Failures at 0.60:
+  [answerable] What health condition does Moana have, and what kind of healthcare provider does she want? Expected [5]; got [5, 4].
+  [answerable] Compare Zara's and Tane's barriers to participating in healthcare. What specific support is suggested for each person? Expected [3, 4]; got [3, 4, 1].
+
+Failures at 0.65:
+
+Expected chunks must contain the answer, not merely share the question's topic.
+Similarity is not a confidence percentage. Validate cutoff changes on additional questions.

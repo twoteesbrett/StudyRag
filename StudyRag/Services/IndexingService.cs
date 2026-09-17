@@ -10,7 +10,7 @@ public class IndexingService(
     {
         var paths = Directory.EnumerateFiles(directoryPath, "*.txt")
             .OrderBy(path => path, StringComparer.OrdinalIgnoreCase);
-            
+
         var chunks = new List<DocumentChunk>();
 
         foreach (var path in paths)

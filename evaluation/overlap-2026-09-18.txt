@@ -1,0 +1,43 @@
+Synthetic overlap baseline: four service-lifetime paragraphs, not actual class notes.
+
+Question (answerable): Which service lifetime creates a new instance every time the service is requested?
+Expected chunks: 1
+  Chunk 1: 0.752 (passes cutoff at 0.60)
+  Chunk 2: 0.700 (passes cutoff at 0.60)
+  Chunk 3: 0.691 (passes cutoff at 0.60)
+  Chunk 4: 0.616 (passes cutoff at 0.60)
+
+Question (answerable): How do scoped and singleton services differ in instance reuse across HTTP requests?
+Expected chunks: 2, 3
+  Chunk 3: 0.774 (passes cutoff at 0.60)
+  Chunk 2: 0.765 (passes cutoff at 0.60)
+  Chunk 1: 0.637 (passes cutoff at 0.60)
+  Chunk 4: 0.522 (below cutoff at 0.60)
+
+Question (unsupported): How many bytes of memory does each scoped service instance use?
+Expected chunks: none
+  Chunk 2: 0.644 (passes cutoff at 0.60)
+  Chunk 3: 0.586 (below cutoff at 0.60)
+  Chunk 1: 0.572 (below cutoff at 0.60)
+  Chunk 4: 0.503 (below cutoff at 0.60)
+
+Threshold comparison (top 3 after filtering):
+Cutoff  Precision  Recall  Exact cases  Unrelated empty  Unsupported empty
+0.40        33.3%  100.0%  0/3           0/0              0/1
+0.45        33.3%  100.0%  0/3           0/0              0/1
+0.50        33.3%  100.0%  0/3           0/0              0/1
+0.55        33.3%  100.0%  0/3           0/0              0/1
+0.60        42.9%  100.0%  0/3           0/0              0/1
+0.65        60.0%  100.0%  2/3           0/0              1/1
+0.70        75.0%  100.0%  2/3           0/0              1/1
+
+Failures at 0.60:
+  [answerable] Which service lifetime creates a new instance every time the service is requested? Expected [1]; got [1, 2, 3].
+  [answerable] How do scoped and singleton services differ in instance reuse across HTTP requests? Expected [2, 3]; got [3, 2, 1].
+  [unsupported] How many bytes of memory does each scoped service instance use? Expected []; got [2].
+
+Failures at 0.65:
+  [answerable] Which service lifetime creates a new instance every time the service is requested? Expected [1]; got [1, 2, 3].
+
+Expected chunks must contain the answer, not merely share the question's topic.
+Similarity is not a confidence percentage. Validate cutoff changes on additional questions.
