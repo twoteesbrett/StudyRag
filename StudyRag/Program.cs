@@ -3,7 +3,8 @@ using OllamaSharp;
 using StudyRag.Models;
 using StudyRag.Services;
 
-var ollamaUri = new Uri("http://192.168.1.11:11434");
+//var ollamaUri = new Uri("http://192.168.1.11:11434");
+var ollamaUri = new Uri("http://localhost:11434");
 
 IChatClient chatClient =
     new OllamaApiClient(
@@ -25,12 +26,11 @@ var ragService =
     new RagService(chatClient);
 
 var textFileLoader = new TextFileLoader();
-var textChunker = new TextChunker();
 
 var text = await textFileLoader.LoadAsync(
     "Data/sample.txt");
 
-var documentTexts = textChunker.Chunk(text);
+var documentTexts = TextChunker.Chunk(text);
 
 var chunks = new List<DocumentChunk>();
 

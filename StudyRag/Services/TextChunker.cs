@@ -2,23 +2,10 @@
 
 public class TextChunker
 {
-    public IReadOnlyList<string> Chunk(
-        string text,
-        int chunkSize = 500)
-    {
-        var chunks = new List<string>();
-
-        for (var i = 0; i < text.Length; i += chunkSize)
-        {
-            var length = Math.Min(
-                chunkSize,
-                text.Length - i);
-
-            var chunk = text.Substring(i, length);
-
-            chunks.Add(chunk);
-        }
-
-        return chunks;
-    }
+    public static IReadOnlyList<string> Chunk(string text) => [.. text
+        .Split(
+            ["\r\n\r\n", "\n\n"],
+            StringSplitOptions.RemoveEmptyEntries)
+        .Select(chunk => chunk.Trim())
+        .Where(chunk => !string.IsNullOrWhiteSpace(chunk))];
 }
