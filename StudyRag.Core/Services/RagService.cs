@@ -69,6 +69,10 @@ public class RagService(IChatClient chatClient, ILogger<RagService>? logger = nu
                 Start by explicitly checking the premise: which person does each relevant passage describe,
                 and what condition or circumstance does it assign to them? Cite those facts first.
                 Then answer or correct the question using that check.
+                For questions about wants or preferences, identify and cite what the person explicitly
+                wants, including desired characteristics. A stated type or approach answers "what kind";
+                an organisation's name is only needed if the question asks for its name. Advice in a passage
+                to ask about preferences does not erase a preference explicitly stated in that passage.
                 Answer concisely. If correcting a mistaken attribution, include the documented facts about
                 BOTH people, each followed by its source label. Do not answer as if the mistaken premise were true.
                 """;
