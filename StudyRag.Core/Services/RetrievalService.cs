@@ -1,6 +1,6 @@
-﻿using StudyRag.Models;
+using StudyRag.Core.Models;
 
-namespace StudyRag.Services;
+namespace StudyRag.Core.Services;
 
 public class RetrievalService(EmbeddingService embeddingService)
 {

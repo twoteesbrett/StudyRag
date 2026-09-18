@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.AI;
 
-namespace StudyRag.Services;
+namespace StudyRag.Core.Services;
 
 public class EmbeddingService(IEmbeddingGenerator<string, Embedding<float>> embeddingGenerator)
 {

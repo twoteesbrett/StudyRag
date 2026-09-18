@@ -1,14 +1,16 @@
-﻿using StudyRag.Models;
+using Microsoft.Extensions.Logging;
+using StudyRag.Core.Models;
 
-namespace StudyRag.Services;
+namespace StudyRag.Core.Services;
 
 public class IndexingService(
     TextFileLoader fileLoader,
-    EmbeddingService embeddingService)
+    EmbeddingService embeddingService,
+    ILogger<IndexingService>? logger = null)
 {
     public async Task<IReadOnlyList<DocumentChunk>> IndexDirectoryAsync(string directoryPath)
     {
-        var paths = Directory.EnumerateFiles(directoryPath, "*.txt")
+        var paths = Directory.EnumerateFiles(directoryPath, "*.txt", SearchOption.AllDirectories)
             .OrderBy(path => path, StringComparer.OrdinalIgnoreCase);
 
         var chunks = new List<DocumentChunk>();
@@ -21,8 +23,7 @@ public class IndexingService(
         return chunks;
     }
 
-    public async Task<IReadOnlyList<DocumentChunk>> IndexAsync(
-        string path)
+    public async Task<IReadOnlyList<DocumentChunk>> IndexAsync(string path)
     {
         var text = await fileLoader.LoadAsync(path);
 
@@ -33,8 +34,7 @@ public class IndexingService(
         for (var index = 0; index < documentTexts.Count; index++)
         {
             var documentText = documentTexts[index];
-            var embedding =
-                await embeddingService.GenerateAsync(documentText);
+            var embedding = await embeddingService.GenerateAsync(documentText);
 
             chunks.Add(new DocumentChunk
             {
@@ -43,6 +43,9 @@ public class IndexingService(
                 Text = documentText,
                 Embedding = embedding
             });
+
+            logger?.LogInformation("Indexed chunk {Chunk} of {Total} for file {File}",
+                index + 1, documentTexts.Count, Path.GetFileName(path));
         }
 
         return chunks;

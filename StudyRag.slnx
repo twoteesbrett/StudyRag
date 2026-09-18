@@ -5,4 +5,6 @@
   </Folder>
   <Project Path="StudyRag.Tests/StudyRag.Tests.csproj" Id="79de0af2-1c16-46e8-9752-fa0d7c192d78" />
   <Project Path="StudyRag/StudyRag.csproj" />
+  <Project Path="StudyRag.Core/StudyRag.Core.csproj" />
+  <Project Path="StudyRag.Evaluation/StudyRag.Evaluation.csproj" />
 </Solution>

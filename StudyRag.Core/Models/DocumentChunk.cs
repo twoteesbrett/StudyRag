@@ -1,4 +1,4 @@
-﻿namespace StudyRag.Models;
+namespace StudyRag.Core.Models;
 
 public record DocumentChunk
 {

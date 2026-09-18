@@ -1,4 +1,4 @@
-﻿namespace StudyRag.Services;
+namespace StudyRag.Core.Services;
 
 public static class TextChunker
 {

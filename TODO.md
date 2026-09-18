@@ -1,7 +1,7 @@
 # TODO
 
 - [x] Evaluate retrieval relevance filtering with expected matching chunks, paraphrases, unrelated questions, and questions about covered topics whose answers are absent. Keep rejected scores visible and compare cutoffs before choosing further changes.
-- [x] Add evaluation mode: `dotnet run --project StudyRag -- --evaluate`. Prints all scores, compares cutoffs, separates unrelated from unsupported-topic questions, and lists failures at 0.60 and 0.65.
+- [x] Add evaluation mode: `dotnet run --project StudyRag -- --evaluate-sample-retrieval`. Prints all scores, compares cutoffs, separates unrelated from unsupported-topic questions, and lists failures at 0.60 and 0.65.
 - [ ] Add and evaluate answer-support/abstention handling: when retrieved text lacks the requested fact, the answer should explicitly say the documents do not provide it. Test actual generated answers against the unsupported questions before considering this solved.
 - [ ] After answer-support handling, evaluate a lower cutoff or a controlled retrieval retry for missed paraphrases (for example, "Why do seasons change?"). Do not automatically relax filtering without checking unsupported answers.
 - [ ] Extend evaluation beyond sample1.txt to the full document collection, identifying expected chunks by source file and chunk number.
@@ -21,12 +21,13 @@ Evaluation result (2026-09-18, configured nomic-embed-text, sample1.txt only):
 - This small hand-authored sample is diagnostic, not a general benchmark. Similarity is not a confidence percentage. No answer-support checks or retries were implemented in this evaluation task.
 
 Small overlap baseline (2026-09-18):
-- [x] Add four synthetic overlapping paragraphs and three labelled questions; run with `--evaluate-overlap`. See [baseline notes](evaluation/README.md) and [scores](evaluation/overlap-2026-09-18.txt).
+- [x] Add four synthetic overlapping paragraphs and three labelled questions; run with `--evaluate-synthetic-overlap`. See [baseline notes](evaluation/README.md) and [scores](evaluation/overlap-2026-09-18.txt).
 - At 0.60, all required evidence is present (100% recall), but answer-support precision is 42.9%; the missing-answer question still retrieves a topical passage.
 - [ ] Replace or supplement the synthetic fixture with real class material, then compare a reranker on passage precision and evidence recall. Do not tune the global cutoff to these three questions.
 
 Class-material baseline:
-- [x] Select five verbatim passages from the user-supplied studyrag_test_corpus.zip and label three questions before evaluation. Run with `--evaluate-class`; source mapping and rationale are in [class-material.md](evaluation/class-material.md).
+- [x] Select five verbatim passages from the user-supplied studyrag_test_corpus.zip and label three questions before evaluation. Run with `--evaluate-precision`; source mapping and rationale are in [class-material.md](evaluation/class-material.md).
 - At 0.60: minimal case-specific evidence precision 60%, recall 100%, unsupported correctly empty 1/1. Additional generic advice can be useful context; this strict precision measure does not imply it is false.
 - At 0.65: all three expected sets match; at 0.70: both comparison passages are missed. Keep 0.60 unchanged because this small sample does not override earlier failures.
-- [ ] Compare a reranker on the fixed class-material and synthetic overlap baselines, then broaden the question set before choosing settings.
+- [x] Implement an opt-in evidence-support reranker and a fixed-candidate comparison (`--evaluate-reranking`). Keep the 0.60 cutoff and top-3 candidate pool unchanged.
+- [ ] Broaden the question set and inspect score/explanation errors before enabling reranking by default or treating scores as confidence.

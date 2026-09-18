@@ -5,7 +5,7 @@ Input: user-supplied `studyrag_test_corpus.zip`, containing five text documents.
 Run from the repository root:
 
 ```powershell
-dotnet run --project StudyRag -- --evaluate-class
+dotnet run --project StudyRag -- --evaluate-precision
 ```
 
 The selected text is in `StudyRag/Data/Evaluation/class-material.txt`. Paragraph numbers below count body paragraphs after the TITLE/TOPIC block, excluding SOURCE NOTES. Their order maps directly to fixture chunk numbers:

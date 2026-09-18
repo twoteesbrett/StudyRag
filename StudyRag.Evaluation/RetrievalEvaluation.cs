@@ -1,6 +1,7 @@
-using StudyRag.Models;
+using StudyRag.Core.Services;
+using StudyRag.Core.Models;
 
-namespace StudyRag.Services;
+namespace StudyRag.Evaluation;
 
 public static class RetrievalEvaluation
 {

@@ -1,0 +1,54 @@
+Indexed chunk 1 of 5 for file class-material.txt
+Indexed chunk 2 of 5 for file class-material.txt
+Indexed chunk 3 of 5 for file class-material.txt
+Indexed chunk 4 of 5 for file class-material.txt
+Indexed chunk 5 of 5 for file class-material.txt
+
+Fixture: class-material.txt; same top-3 candidates at 0.60 for both methods.
+
+Question: What healthcare provider does Moana want?
+  [class-material.txt, chunk 5] similarity=0.719 support=2/3 selected=True
+    Evidence: Another assessment case features Moana, a Pasifika solo parent who works long hours, has chronic asthma and wants help finding a provider that incorporates Pasifika health models.
+    Reason: Sentence 1 directly states that Moana wants help finding a provider that incorporates Pasifika health models.
+  Expected [5]; selected [5]
+
+Question: What is the name of Moana's preferred healthcare provider?
+  [class-material.txt, chunk 5] similarity=0.729 support=0/3 selected=False
+    Evidence: 
+    Reason: Invalid evidence sentence ID: 1.
+  Expected []; selected []
+
+Question: What health condition does Moana have, and what kind of healthcare provider does she want?
+  [class-material.txt, chunk 5] similarity=0.755 support=2/3 selected=True
+    Evidence: Another assessment case features Moana, a Pasifika solo parent who works long hours, has chronic asthma and wants help finding a provider that incorporates Pasifika health models.
+    Reason: Sentence 1 directly states that Moana has chronic asthma and wants help finding a provider that incorporates Pasifika health models.
+  [class-material.txt, chunk 4] similarity=0.601 support=0/3 selected=False
+    Evidence: 
+    Reason: The passage does not provide any information about Moana's health condition or the type of healthcare provider she wants.
+  Expected [5]; selected [5]
+
+Question: Compare Zara's and Tane's barriers to participating in healthcare. What specific support is suggested for each person?
+  [class-material.txt, chunk 3] similarity=0.689 support=2/3 selected=True
+    Evidence: A second supplied scenario concerns Zara, whose illness affects her speech and who uses English as an additional language.
+    Reason: The first sentence introduces Zara's barriers, but does not provide specific support. The second and third sentences provide specific support for Zara, while the fourth sentence provides specific support for Tane.
+  [class-material.txt, chunk 1] similarity=0.630 support=2/3 selected=True
+    Evidence: Where a language barrier affects important healthcare discussions, a competent interpreter should be arranged when necessary and reasonably practicable.
+    Reason: Sentence 4 directly compares Tane's potential need for support with Zara's, suggesting that a relative should not replace a professional interpreter, implying barriers related to language and communication.
+  [class-material.txt, chunk 4] similarity=0.680 support=0/3 selected=False
+    Evidence: 
+    Reason: Invalid evidence sentence ID: 1.
+  Expected [3, 4]; selected [3, 1]
+
+Question: What exact dose of diabetes medication has Tane been prescribed?
+  Expected []; selected []
+Baseline: precision 57.1%; recall 100.0%; exact 2/5; unsupported empty 1/2
+Reranked: precision 75.0%; recall 75.0%; exact 3/5; unsupported empty 1/2
+Invalid assessments: 2; affected cases cannot count as exact or correctly unsupported.
+Indexed chunk 1 of 4 for file overlap.txt
+Indexed chunk 2 of 4 for file overlap.txt
+Indexed chunk 3 of 4 for file overlap.txt
+Indexed chunk 4 of 4 for file overlap.txt
+
+Fixture: overlap.txt; same top-3 candidates at 0.60 for both methods.
+
+Question: Which service lifetime creates a new instance every time the service is requested?

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.AI;
-using StudyRag.Services;
+using StudyRag.Core.Services;
 
 namespace StudyRag.Tests;
 
