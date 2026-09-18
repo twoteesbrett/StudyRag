@@ -18,6 +18,7 @@ public static class DebugConsole
             Console.ForegroundColor = originalColor;
         }
     }
+
     public static void WriteHeader(string title)
     {
         WriteLine(

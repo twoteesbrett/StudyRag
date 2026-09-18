@@ -1,4 +1,4 @@
-namespace StudyRag.Core.Services;
+namespace StudyRag.Core.Helpers;
 
 public class TextFileLoader
 {

@@ -15,11 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../StudyRag.Core/StudyRag.Core.csproj" />
-    <ProjectReference Include="../StudyRag.Evaluation/StudyRag.Evaluation.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\" />
   </ItemGroup>
 
   <ItemGroup>

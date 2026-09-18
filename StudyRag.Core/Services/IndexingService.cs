@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using StudyRag.Core.Helpers;
 using StudyRag.Core.Models;
 
 namespace StudyRag.Core.Services;
@@ -27,7 +28,7 @@ public class IndexingService(
     {
         var text = await fileLoader.LoadAsync(path);
 
-        var documentTexts = TextChunker.Chunk(text);
+        var documentTexts = TextChunker.GetChunks(text);
 
         var chunks = new List<DocumentChunk>();
 

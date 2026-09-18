@@ -17,7 +17,7 @@ public class EvidenceRerankerTests
     [InlineData("{\"score\":2,\"evidence\":0,\"reason\":\"Present\"}")]
     public void InvalidAssessment_CannotSelectPassage(string response)
     {
-        var result = EvidenceReranker.Parse(Candidate("Fact"), response);
+        var result = EvidenceAssessmentService.Parse(Candidate("Fact"), response);
         Assert.False(result.IsSelected);
         Assert.False(result.IsValid);
     }
@@ -25,7 +25,7 @@ public class EvidenceRerankerTests
     [Fact]
     public void RejectionWithExistingSentenceReference_RemainsValidAndUnselected()
     {
-        var result = EvidenceReranker.Parse(Candidate("A provider with preferred characteristics."),
+        var result = EvidenceAssessmentService.Parse(Candidate("A provider with preferred characteristics."),
             """{"evidence":1,"reason":"No provider name is stated","score":0}""");
         Assert.True(result.IsValid);
         Assert.False(result.IsSelected);
@@ -36,7 +36,7 @@ public class EvidenceRerankerTests
     public void EvidenceId_ResolvesToVerbatimSourceSentence()
     {
         var candidate = Candidate("First fact. A second fact with Māori text!");
-        var result = EvidenceReranker.Parse(candidate,
+        var result = EvidenceAssessmentService.Parse(candidate,
             """{"evidence":2,"reason":"Second sentence answers it","score":3}""");
         Assert.True(result.IsSelected);
         Assert.Equal("A second fact with Māori text!", result.Evidence);
@@ -46,21 +46,38 @@ public class EvidenceRerankerTests
     public async Task RankAsync_KeepsBothComparisonSidesAndRejectsTopicalMatch()
     {
         using var client = new StubChatClient();
-        var results = await new EvidenceReranker(client).RankAsync("Compare A and B",
+        var results = await new EvidenceAssessmentService(client).AssessAsync("Compare A and B",
             [Candidate("Generic advice", 1, 0.9f), Candidate("A fact", 2, 0.7f), Candidate("B fact", 3, 0.6f)]);
         Assert.Equal(new[] { 2, 3 }, results.Where(r => r.IsSelected).Select(r => r.Retrieval.Chunk.ChunkNumber));
         Assert.Equal(3, client.Calls);
-        Assert.Empty(await new EvidenceReranker(client).RankAsync("Empty", []));
+        Assert.Empty(await new EvidenceAssessmentService(client).AssessAsync("Empty", []));
         Assert.Equal(3, client.Calls);
     }
 
+
+    [Fact]
+    public async Task RankAsync_InstructsModelToKeepCorrectiveAndMissingDetailContext()
+    {
+        using var client = new StubChatClient();
+
+        await new EvidenceAssessmentService(client).AssessAsync(
+            "Why does Moana need help managing her diabetes?",
+            [Candidate("Moana has chronic asthma.")]);
+
+        Assert.Contains("corrects a false premise", client.LastPrompt);
+        Assert.Contains("question asks for a missing name, dose, address", client.LastPrompt);
+        Assert.Contains("Moana has asthma", client.LastPrompt);
+        Assert.Contains("Do not use score 2 for generic topical material", client.LastPrompt);
+    }
     private sealed class StubChatClient : IChatClient
     {
         public int Calls { get; private set; }
+        public string LastPrompt { get; private set; } = "";
         public Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> messages,
             ChatOptions? options = null, CancellationToken cancellationToken = default)
         {
             Calls++;
+            LastPrompt = string.Join(Environment.NewLine, messages.Select(message => message.Text));
             var response = Calls switch
             {
                 1 => "{\"score\":1,\"evidence\":0,\"reason\":\"Generic only\"}",

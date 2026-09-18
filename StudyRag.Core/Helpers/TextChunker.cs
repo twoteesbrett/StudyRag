@@ -1,8 +1,13 @@
-namespace StudyRag.Core.Services;
+namespace StudyRag.Core.Helpers;
 
 public static class TextChunker
 {
-    public static IReadOnlyList<string> Chunk(
+    /// <summary>
+    /// Splits text into manageable chunks, respecting paragraph and
+    /// sentence boundaries where possible. Supports configurable chunk
+    /// sizes and overlapping content to preserve context.
+    /// </summary>
+    public static IReadOnlyList<string> GetChunks(
         string text,
         int maxCharacters = 1000,
         int overlapCharacters = 100)
@@ -12,9 +17,7 @@ public static class TextChunker
         ArgumentOutOfRangeException.ThrowIfNegative(overlapCharacters);
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(overlapCharacters, maxCharacters);
 
-        var paragraphs = text.Split(
-            ["\r\n\r\n", "\n\n"],
-            StringSplitOptions.RemoveEmptyEntries);
+        var paragraphs = text.Split( ["\r\n\r\n", "\n\n"], StringSplitOptions.RemoveEmptyEntries);
         var chunks = new List<string>();
 
         foreach (var paragraph in paragraphs)
@@ -34,11 +37,16 @@ public static class TextChunker
                 }
 
                 var chunk = trimmed[start..end].Trim();
+
                 if (chunk.Length > 0)
+                {
                     chunks.Add(chunk);
+                }
 
                 if (end == trimmed.Length)
+                {
                     break;
+                }
 
                 start = end - overlapCharacters;
             }
@@ -47,6 +55,11 @@ public static class TextChunker
         return chunks;
     }
 
+    /// <summary>
+    /// Finds a suitable split position within the specified range,
+    /// preferring sentence endings, then whitespace, and finally
+    /// the maximum allowed position.
+    /// </summary>
     private static int FindSplit(string text, int minimumEnd, int maximumEnd)
     {
         // Prefer a sentence ending, then whitespace, then a hard character limit.

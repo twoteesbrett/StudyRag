@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <STUDYRAG_INTEGRATION_TESTS>1</STUDYRAG_INTEGRATION_TESTS>
+      <!-- Defaults come from OllamaSettings.cs. Uncomment to override for tests. -->
+      <!-- <STUDYRAG_OLLAMA_ENDPOINT>http://localhost:11434</STUDYRAG_OLLAMA_ENDPOINT> -->
+      <!-- <STUDYRAG_JUDGE_MODEL>qwen2.5</STUDYRAG_JUDGE_MODEL> -->
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>
