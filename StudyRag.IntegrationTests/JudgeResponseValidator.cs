@@ -2,7 +2,13 @@ using System.Text.Json;
 
 namespace StudyRag.IntegrationTests;
 
-internal static class JudgeVerdict
+/// <summary>
+/// Validates an LLM judge's JSON response and determines whether
+/// all answer-quality criteria have passed.
+/// Returns a failure reason when the response is invalid or
+/// one or more criteria are not met.
+/// </summary>
+internal static class JudgeResponseValidator
 {
     public static bool Passes(string response, out string reason)
     {

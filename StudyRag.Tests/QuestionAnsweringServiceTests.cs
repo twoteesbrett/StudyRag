@@ -63,7 +63,7 @@ public class QuestionAnsweringServiceTests
         Assert.Contains("[precision.txt, chunk 21]", client.GenerationPrompt);
         Assert.Contains("Moana has chronic asthma.", client.GenerationPrompt);
         Assert.Contains("question contains a false premise", client.GenerationPrompt);
-        Assert.Contains("questioned fact belongs to another named person", client.GenerationPrompt);
+        Assert.Contains("If it is attributed to another named person", client.GenerationPrompt);
         Assert.Contains("inline citation immediately after every factual statement", client.GenerationPrompt);
         Assert.Contains("used only to correct the question", client.GenerationPrompt);
         Assert.Contains("Do not produce a separate citation list", client.GenerationPrompt);
@@ -86,7 +86,7 @@ public class QuestionAnsweringServiceTests
         Assert.Equal(0, embeddings.Calls);
         Assert.Equal(0, client.EvidenceCalls);
         Assert.Contains("No document context was supplied.", client.GenerationPrompt);
-        Assert.Contains("Never substitute a similarly named real, fictional, or public person", client.GenerationPrompt);
+        Assert.Contains("Never substitute a similarly named real or fictional person", client.GenerationPrompt);
         Assert.Contains("no context means you must only say", client.GenerationPrompt);
         Assert.Contains("do not add generic background", client.GenerationPrompt);
     }

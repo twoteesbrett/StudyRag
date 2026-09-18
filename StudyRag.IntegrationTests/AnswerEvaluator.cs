@@ -39,7 +39,7 @@ internal sealed class AnswerEvaluator(IChatClient judge, ITestOutputHelper outpu
 
         output.WriteLine("Judge: " + response.Text);
 
-        Assert.True(JudgeVerdict.Passes(response.Text, out var reason), reason);
+        Assert.True(JudgeResponseValidator.Passes(response.Text, out var reason), reason);
     }
 
     private static void AssertValidResponse(QuestionAnswer answer)

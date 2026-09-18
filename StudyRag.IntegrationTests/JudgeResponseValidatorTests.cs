@@ -1,6 +1,6 @@
 namespace StudyRag.IntegrationTests;
 
-public class JudgeVerdictTests
+public class JudgeResponseValidatorTests
 {
     [Theory]
     [InlineData("{}")]
@@ -8,7 +8,7 @@ public class JudgeVerdictTests
     [InlineData("null")]
     [InlineData("{\"meetsRubric\":true,\"citationsSupported\":true,\"noUnsupportedClaims\":true}")]
     [InlineData("{\"meetsRubric\":\"true\",\"citationsSupported\":true,\"noUnsupportedClaims\":true,\"reason\":\"OK\"}")]
-    public void Malformed_grades_fail_closed(string response) => Assert.False(JudgeVerdict.Passes(response, out _));
+    public void Malformed_grades_fail_closed(string response) => Assert.False(JudgeResponseValidator.Passes(response, out _));
 
     [Theory]
     [InlineData(false, true, true)]
@@ -25,7 +25,7 @@ public class JudgeVerdictTests
             reason = "Grading explanation"
         });
 
-        Assert.Equal(facts && citations && grounded, JudgeVerdict.Passes(json, out var reason));
+        Assert.Equal(facts && citations && grounded, JudgeResponseValidator.Passes(json, out var reason));
         Assert.Equal("Grading explanation", reason);
     }
     [Theory]
@@ -44,6 +44,6 @@ public class JudgeVerdictTests
             reason = ""
         });
 
-        Assert.Equal(expected, JudgeVerdict.Passes(json, out _));
+        Assert.Equal(expected, JudgeResponseValidator.Passes(json, out _));
     }
 }
