@@ -13,7 +13,8 @@ public class IndexingService(
     TextFileLoader fileLoader,
     IChatClient chat,
     EmbeddingService embeddingService,
-    ILogger<IndexingService>? logger = null)
+    ILogger<IndexingService>? logger = null,
+    Action<ChatOptions>? configureChunkingOptions = null)
 {
     private const int MaxChars = 4000;
     private const int RequestChars = 4000;
@@ -296,6 +297,8 @@ public class IndexingService(
             MaxOutputTokens = Math.Max(256, blocks.Count * 24 + 32),
             ResponseFormat = ChatResponseFormat.ForJsonSchema(schema.RootElement.Clone(), "breaks")
         };
+
+        configureChunkingOptions?.Invoke(options);
 
         logger?.LogDebug("Requesting chunk boundaries for {Blocks} blocks; payload is {Length} characters.",
             blocks.Count, payload.Length);

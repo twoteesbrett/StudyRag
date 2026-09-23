@@ -5,7 +5,10 @@ using StudyRag.Core.Models;
 
 namespace StudyRag.Core.Services;
 
-public class RagService(IChatClient chatClient, ILogger<RagService>? logger = null)
+public class RagService(
+    IChatClient chatClient,
+    ILogger<RagService>? logger = null,
+    Action<ChatOptions>? configureChatOptions = null)
 {
     public async Task<string> AskAsync(
         string question,
@@ -96,8 +99,11 @@ public class RagService(IChatClient chatClient, ILogger<RagService>? logger = nu
                 """),
             new(ChatRole.User, prompt)
         ];
+        var options = new ChatOptions { Temperature = 0 };
+        configureChatOptions?.Invoke(options);
+
         var timer = Stopwatch.StartNew();
-        var response = await chatClient.GetResponseAsync(messages, new ChatOptions { Temperature = 0 });
+        var response = await chatClient.GetResponseAsync(messages, options);
 
         logger?.LogInformation("Answer generated in {Elapsed} ms.", timer.ElapsedMilliseconds);
         logger?.LogDebug("Answer contains {Length} characters.", response.Text.Length);

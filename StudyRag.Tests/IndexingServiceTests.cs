@@ -60,6 +60,23 @@ public class IndexingServiceTests : IDisposable
         Assert.Empty(generator.Inputs);
     }
 
+    [Fact]
+    public async Task IndexAsync_AppliesChunkingOptionsConfigurator()
+    {
+        var path = Path.Combine(directory, "notes.md");
+        await File.WriteAllTextAsync(path, "First.\n\nSecond.");
+        using var chat = new StubChat();
+        var service = new IndexingService(
+            new TextFileLoader(),
+            chat,
+            new EmbeddingService(new StubEmbeddingGenerator()),
+            configureChunkingOptions: options => options.Seed = 42);
+
+        await service.IndexAsync(path);
+
+        Assert.Equal(42, chat.Options?.Seed);
+    }
+
     [Theory]
     [InlineData("# Title\n\nText.\n\n", "# Title\n\n", "Text.\n\n")]
     [InlineData("First\r\n \t\r\nSecond", "First\r\n \t\r\n", "Second")]
@@ -310,6 +327,7 @@ public class IndexingServiceTests : IDisposable
     {
         public int Calls { get; private set; }
         public ChatResponseFormat? Format { get; private set; }
+        public ChatOptions? Options { get; private set; }
         public List<TextBlock> Blocks { get; } = [];
         public List<TextBlock[]> Requests { get; } = [];
 
@@ -317,6 +335,7 @@ public class IndexingServiceTests : IDisposable
             ChatOptions? options = null, CancellationToken cancellationToken = default)
         {
             Calls++;
+            Options = options;
             Format = options?.ResponseFormat;
             using var json = JsonDocument.Parse(messages.Last().Text);
             var blocks = json.RootElement;

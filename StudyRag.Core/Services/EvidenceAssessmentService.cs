@@ -7,7 +7,10 @@ using StudyRag.Core.Models;
 
 namespace StudyRag.Core.Services;
 
-public class EvidenceAssessmentService(IChatClient chatClient, ILogger<EvidenceAssessmentService>? logger = null)
+public class EvidenceAssessmentService(
+    IChatClient chatClient,
+    ILogger<EvidenceAssessmentService>? logger = null,
+    Action<ChatOptions>? configureChatOptions = null)
 {
     /// <summary>
     /// Assesses how well each retrieved passage supports the question using an LLM.
@@ -92,7 +95,16 @@ public class EvidenceAssessmentService(IChatClient chatClient, ILogger<EvidenceA
             }
 
             var timer = Stopwatch.StartNew();
-            var response = await chatClient.GetResponseAsync(messages, new ChatOptions { Temperature = 0, MaxOutputTokens = 512, ResponseFormat = ChatResponseFormat.Json });
+            var options = new ChatOptions
+            {
+                Temperature = 0,
+                MaxOutputTokens = 512,
+                ResponseFormat = ChatResponseFormat.Json
+            };
+
+            configureChatOptions?.Invoke(options);
+
+            var response = await chatClient.GetResponseAsync(messages, options);
             logger?.LogDebug("Evidence assessment returned {Length} characters in {Elapsed} ms.",
                 response.Text.Length, timer.ElapsedMilliseconds);
             var assessment = Parse(candidate, response.Text);

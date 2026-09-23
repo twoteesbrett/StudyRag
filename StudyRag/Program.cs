@@ -2,6 +2,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OllamaSharp;
+using OllamaSharp.Models.Chat;
 
 using StudyRag.Core.Helpers;
 using StudyRag.Core.Services;
@@ -30,6 +31,9 @@ registrations.AddSingleton<IChatClient>(provider => new OllamaApiClient(
 
 registrations.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(provider => new OllamaApiClient(
     provider.GetRequiredService<HttpClient>(), settings.EmbeddingModel));
+
+registrations.AddSingleton<Action<ChatOptions>>(_ => options =>
+    options.RawRepresentationFactory = _ => new ChatRequest { Think = false });
 
 registrations.AddLogging(logging => logging
     .SetMinimumLevel(LogLevel.Trace)

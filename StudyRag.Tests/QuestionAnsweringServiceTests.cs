@@ -91,6 +91,19 @@ public class QuestionAnsweringServiceTests
         Assert.Contains("do not add generic background", client.GenerationPrompt);
     }
 
+    [Fact]
+    public async Task RagService_AppliesChatOptionsConfigurator()
+    {
+        using var client = new StubChat(false);
+        var service = new RagService(
+            client,
+            configureChatOptions: options => options.Seed = 42);
+
+        await service.AskAsync("Question", []);
+
+        Assert.Equal(42, client.GenerationOptions?.Seed);
+    }
+
     private sealed class StubEmbeddings : IEmbeddingGenerator<string, Embedding<float>>
     {
         public int Calls { get; private set; }
@@ -110,6 +123,7 @@ public class QuestionAnsweringServiceTests
     private sealed class StubChat(bool malformed, bool rejectAll = false) : IChatClient
     {
         public string GenerationPrompt { get; private set; } = "";
+        public ChatOptions? GenerationOptions { get; private set; }
         public int EvidenceCalls { get; private set; }
         public Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> messages,
             ChatOptions? options = null, CancellationToken cancellationToken = default)
@@ -128,6 +142,7 @@ public class QuestionAnsweringServiceTests
             else
             {
                 GenerationPrompt = text;
+                GenerationOptions = options;
                 response = "Generated answer";
             }
             return Task.FromResult(new ChatResponse(new ChatMessage(ChatRole.Assistant, response)));

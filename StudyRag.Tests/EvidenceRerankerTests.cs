@@ -69,15 +69,31 @@ public class EvidenceRerankerTests
         Assert.Contains("Moana has asthma", client.LastPrompt);
         Assert.Contains("Do not use score 2 for generic topical material", client.LastPrompt);
     }
+
+    [Fact]
+    public async Task AssessAsync_AppliesChatOptionsConfigurator()
+    {
+        using var client = new StubChatClient();
+        var service = new EvidenceAssessmentService(
+            client,
+            configureChatOptions: options => options.Seed = 42);
+
+        await service.AssessAsync("Question", [Candidate("Fact")]);
+
+        Assert.Equal(42, client.LastOptions?.Seed);
+    }
+
     private sealed class StubChatClient : IChatClient
     {
         public int Calls { get; private set; }
         public string LastPrompt { get; private set; } = "";
+        public ChatOptions? LastOptions { get; private set; }
         public Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> messages,
             ChatOptions? options = null, CancellationToken cancellationToken = default)
         {
             Calls++;
             LastPrompt = string.Join(Environment.NewLine, messages.Select(message => message.Text));
+            LastOptions = options;
             var response = Calls switch
             {
                 1 => "{\"score\":1,\"evidence\":0,\"reason\":\"Generic only\"}",
