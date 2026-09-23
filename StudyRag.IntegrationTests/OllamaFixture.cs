@@ -1,8 +1,7 @@
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using OllamaSharp;
 using StudyRag.Configuration;
+using StudyRag.Core.Helpers;
 using StudyRag.Core.Models;
 using StudyRag.Core.Services;
 
@@ -23,7 +22,8 @@ public sealed class OllamaCollection : ICollectionFixture<OllamaFixture> { }
 
 public sealed class OllamaFixture : IAsyncLifetime
 {
-    private ServiceProvider? _services;
+    private IChatClient? _chat;
+    private IEmbeddingGenerator<string, Embedding<float>>? _embeddings;
     private HttpClient? _httpClient;
 
     public IChatClient Judge { get; private set; } = null!;
@@ -35,9 +35,9 @@ public sealed class OllamaFixture : IAsyncLifetime
     {
         if (Environment.GetEnvironmentVariable("STUDYRAG_INTEGRATION_TESTS") != "1") return;
 
-        var defaults = new OllamaSettings();
+        var defaults = new Settings();
 
-        var settings = new OllamaSettings
+        var settings = new Settings
         {
             Endpoint = new Uri(Environment.GetEnvironmentVariable("STUDYRAG_OLLAMA_ENDPOINT") ?? defaults.Endpoint.ToString()),
             ChatModel = Environment.GetEnvironmentVariable("STUDYRAG_CHAT_MODEL") ?? defaults.ChatModel,
@@ -48,16 +48,17 @@ public sealed class OllamaFixture : IAsyncLifetime
 
         Configuration = $"Endpoint={settings.Endpoint}; answer={settings.ChatModel}; embeddings={settings.EmbeddingModel}; judge={judgeModel}";
 
-        _services = new ServiceCollection()
-            .AddStudyRag(settings)
-            .AddLogging(logging => logging.ClearProviders()).BuildServiceProvider();
-
         _httpClient = new HttpClient { BaseAddress = settings.Endpoint, Timeout = settings.RequestTimeout };
 
         Judge = new OllamaApiClient(_httpClient, judgeModel);
-        AnsweringService = _services.GetRequiredService<QuestionAnsweringService>();
+        _chat = new OllamaApiClient(_httpClient, settings.ChatModel);
+        _embeddings = new OllamaApiClient(_httpClient, settings.EmbeddingModel);
+        var embeddings = new EmbeddingService(_embeddings);
 
-        var indexing = _services.GetRequiredService<IndexingService>();
+        AnsweringService = new QuestionAnsweringService(
+            new RetrievalService(embeddings), new EvidenceAssessmentService(_chat), new RagService(_chat));
+
+        var indexing = new IndexingService(new TextFileLoader(), _chat, embeddings);
         var chunks = new List<DocumentChunk>();
 
         // Explicit production documents, including unrelated material as retrieval distractors.
@@ -69,10 +70,12 @@ public sealed class OllamaFixture : IAsyncLifetime
         Chunks = chunks;
     }
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync()
     {
         Judge?.Dispose();
+        _chat?.Dispose();
+        _embeddings?.Dispose();
         _httpClient?.Dispose();
-        if (_services is not null) await _services.DisposeAsync();
+        return Task.CompletedTask;
     }
 }

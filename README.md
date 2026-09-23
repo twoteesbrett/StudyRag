@@ -115,6 +115,18 @@ dotnet run --project StudyRag
 
 The application indexes the documents on startup. Enter questions at the prompt and type `exit` to quit. There are no selectable answering modes.
 
+## Logging
+
+The main application uses Microsoft's built-in console logging provider. Prompts, command-line help and generated answers remain ordinary console UI.
+
+Logging is configured directly in `StudyRag/Program.cs` and defaults to `LogLevel.Debug`. Change `SetMinimumLevel` to `LogLevel.Information` for quieter progress output or `LogLevel.Trace` to include full prompts, chunking payloads/responses and retrieved text:
+
+```csharp
+.SetMinimumLevel(LogLevel.Information)
+```
+
+Use `Microsoft.Extensions.Logging` for `LogLevel`. Information messages show file progress and completion; Debug adds block counts, ranges, validation, embedding dimensions, retrieval scores and model timings. Warnings explain skipped files and rejected responses. Errors include exception details. Full text is excluded from Debug output.
+
 ## Solution structure
 
 | Project | Responsibility |

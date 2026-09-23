@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using StudyRag.Core.Models;
 
 namespace StudyRag.Core.Services;
@@ -10,10 +11,13 @@ namespace StudyRag.Core.Services;
 public sealed class QuestionAnsweringService(
     RetrievalService retrieval,
     EvidenceAssessmentService assessment,
-    RagService generation)
+    RagService generation,
+    ILogger<QuestionAnsweringService>? logger = null)
 {
     public async Task<QuestionAnswer> AnswerAsync(string question, IReadOnlyList<DocumentChunk> chunks)
     {
+        logger?.LogDebug("Question has {Length} characters; corpus contains {Count} chunks.", question.Length, chunks.Count);
+
         var candidates = chunks.Count == 0
             ? []
             : await retrieval.FindBestMatchesAsync(question, chunks, count: 3, minSimilarity: 0.60f);
@@ -26,6 +30,9 @@ public sealed class QuestionAnsweringService(
             .ToArray();
 
         IReadOnlyList<RetrievalResult> related = selected.Length == 0 ? candidates : [];
+
+        logger?.LogDebug("Evidence selection: {Candidates} candidates, {Selected} supporting, {Related} related.",
+            candidates.Count, selected.Length, related.Count);
 
         var answer = await generation.AskAsync(question, selected, related);
 

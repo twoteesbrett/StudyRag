@@ -1,4 +1,4 @@
-using StudyRag.Core.Logging;
+using System.Diagnostics;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using StudyRag.Core.Models;
@@ -77,8 +77,9 @@ public class RagService(IChatClient chatClient, ILogger<RagService>? logger = nu
                 BOTH people, each followed by its source label. Do not answer as if the mistaken premise were true.
                 """;
 
-        logger?.LogDebug("=== PROMPT ==={NewLine}{Prompt}", Environment.NewLine, prompt);
-        logger?.LogInformation(LogEvents.Action,
+        logger?.LogDebug("Answer prompt contains {Length} characters.", prompt.Length);
+        logger?.LogTrace("Answer prompt: {Prompt}", prompt);
+        logger?.LogInformation(
             "Generating answer using {Count} supporting and {RelatedCount} related passages...",
             passages.Length, relatedPassages.Length);
 
@@ -95,9 +96,11 @@ public class RagService(IChatClient chatClient, ILogger<RagService>? logger = nu
                 """),
             new(ChatRole.User, prompt)
         ];
+        var timer = Stopwatch.StartNew();
         var response = await chatClient.GetResponseAsync(messages, new ChatOptions { Temperature = 0 });
 
-        logger?.LogInformation(LogEvents.Response, "Answer generated.");
+        logger?.LogInformation("Answer generated in {Elapsed} ms.", timer.ElapsedMilliseconds);
+        logger?.LogDebug("Answer contains {Length} characters.", response.Text.Length);
 
         return response.Text;
     }

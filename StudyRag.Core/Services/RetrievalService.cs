@@ -1,4 +1,3 @@
-using StudyRag.Core.Logging;
 using Microsoft.Extensions.Logging;
 using StudyRag.Core.Models;
 using StudyRag.Core.Helpers;
@@ -17,8 +16,10 @@ public class RetrievalService(EmbeddingService embeddingService, ILogger<Retriev
 
         if (logger?.IsEnabled(LogLevel.Information) == true)
         {
-            logger.LogInformation(LogEvents.Action, "Finding matching passages...");
+            logger.LogInformation("Finding matching passages...");
         }
+
+        logger?.LogDebug("Retrieval limit {Count}; minimum similarity {Minimum}.", count, minSimilarity);
 
         var questionEmbedding =
             await embeddingService.GenerateAsync(question);
@@ -32,15 +33,16 @@ public class RetrievalService(EmbeddingService embeddingService, ILogger<Retriev
 
         if (logger?.IsEnabled(LogLevel.Information) == true)
         {
-            logger.LogInformation(LogEvents.Response, "Found {Count} matching passages.", results.Count);
+            logger.LogInformation("Found {Count} matching passages.", results.Count);
         }
 
         if (logger?.IsEnabled(LogLevel.Debug) == true)
         {
             foreach (var result in results)
             {
-                logger.LogDebug(LogEvents.Response, "[{Source}, chunk {Chunk}] Similarity: {Similarity:F3}\n{Text}",
-                    result.Chunk.SourceFile, result.Chunk.ChunkNumber, result.Similarity, result.Chunk.Text);
+                logger.LogDebug("[{Source}, chunk {Chunk}] Similarity: {Similarity:F3}; {Length} characters.",
+                    result.Chunk.SourceFile, result.Chunk.ChunkNumber, result.Similarity, result.Chunk.Text.Length);
+                logger.LogTrace("Retrieved text: {Text}", result.Chunk.Text);
             }
         }
 

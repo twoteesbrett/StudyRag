@@ -1,6 +1,4 @@
-namespace StudyRag.Configuration;
-
-public sealed class OllamaSettings
+public sealed class Settings
 {
     public Uri Endpoint { get; init; } = new("http://192.168.1.11:11434");
     //public Uri Endpoint { get; init; } = new("http://localhost:11434");

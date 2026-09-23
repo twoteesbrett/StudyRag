@@ -1,4 +1,4 @@
-using StudyRag.Core.Logging;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.AI;
@@ -22,7 +22,7 @@ public class EvidenceAssessmentService(IChatClient chatClient, ILogger<EvidenceA
 
         if (logger?.IsEnabled(LogLevel.Information) == true)
         {
-            logger.LogInformation(LogEvents.Action, "Checking {Count} passages for supporting evidence...", passages.Length);
+            logger.LogInformation("Checking {Count} passages for supporting evidence...", passages.Length);
         }
 
         var results = new List<EvidenceAssessment>();
@@ -87,20 +87,24 @@ public class EvidenceAssessmentService(IChatClient chatClient, ILogger<EvidenceA
 
             if (logger?.IsEnabled(LogLevel.Debug) == true)
             {
-                logger.LogDebug(LogEvents.Action, "Assessing [{Source}, chunk {Chunk}]...",
+                logger.LogDebug("Assessing [{Source}, chunk {Chunk}]...",
                     candidate.Chunk.SourceFile, candidate.Chunk.ChunkNumber);
             }
 
+            var timer = Stopwatch.StartNew();
             var response = await chatClient.GetResponseAsync(messages, new ChatOptions { Temperature = 0, MaxOutputTokens = 512, ResponseFormat = ChatResponseFormat.Json });
+            logger?.LogDebug("Evidence assessment returned {Length} characters in {Elapsed} ms.",
+                response.Text.Length, timer.ElapsedMilliseconds);
             var assessment = Parse(candidate, response.Text);
 
             results.Add(assessment);
 
             if (logger?.IsEnabled(LogLevel.Debug) == true)
             {
-                logger.LogDebug(LogEvents.Response, "[{Source}, chunk {Chunk}] Support: {Score}/3; selected: {Selected}; reason: {Reason}\nEvidence: {Evidence}",
+                logger.LogDebug("[{Source}, chunk {Chunk}] Support: {Score}/3; selected: {Selected}; reason: {Reason}",
                     candidate.Chunk.SourceFile, candidate.Chunk.ChunkNumber,
-                    assessment.Score, assessment.IsSelected, assessment.Reason, assessment.Evidence);
+                    assessment.Score, assessment.IsSelected, assessment.Reason);
+                logger.LogTrace("Evidence text: {Evidence}", assessment.Evidence);
             }
 
             if (!assessment.IsValid)
@@ -112,7 +116,7 @@ public class EvidenceAssessmentService(IChatClient chatClient, ILogger<EvidenceA
 
         if (logger?.IsEnabled(LogLevel.Information) == true)
         {
-            logger.LogInformation(LogEvents.Response, "Selected {Selected} of {Count} passages as supporting evidence.",
+            logger.LogInformation("Selected {Selected} of {Count} passages as supporting evidence.",
                 results.Count(result => result.IsSelected), results.Count);
         }
 

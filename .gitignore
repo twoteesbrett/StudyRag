@@ -480,3 +480,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Local document extraction experiment
+/.local/markitdown-csharp/
+/StudyRag.ExtractionSandbox/Input/*
+!/StudyRag.ExtractionSandbox/Input/.gitkeep
+/StudyRag.ExtractionSandbox/Output/
