@@ -1,6 +1,5 @@
 using Microsoft.Extensions.AI;
 using OllamaSharp;
-using StudyRag.Configuration;
 using StudyRag.Core.Helpers;
 using StudyRag.Core.Models;
 using StudyRag.Core.Services;

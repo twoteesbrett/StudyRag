@@ -14,13 +14,15 @@ public sealed class QuestionAnsweringService(
     RagService generation,
     ILogger<QuestionAnsweringService>? logger = null)
 {
+    private const int RetrievalLimit = 10;
+
     public async Task<QuestionAnswer> AnswerAsync(string question, IReadOnlyList<DocumentChunk> chunks)
     {
         logger?.LogDebug("Question has {Length} characters; corpus contains {Count} chunks.", question.Length, chunks.Count);
 
         var candidates = chunks.Count == 0
             ? []
-            : await retrieval.FindBestMatchesAsync(question, chunks, count: 3, minSimilarity: 0.60f);
+            : await retrieval.FindBestMatchesAsync(question, chunks, count: RetrievalLimit, minSimilarity: 0.60f);
 
         var assessments = await assessment.AssessAsync(question, candidates);
 

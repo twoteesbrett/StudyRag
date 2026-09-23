@@ -1,4 +1,5 @@
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OllamaSharp;
@@ -15,7 +16,20 @@ if (args.Length > 0)
     return args.SequenceEqual(["--help"]) ? 0 : 1;
 }
 
-var settings = new Settings();
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+    .Build();
+
+var settings = new Settings
+{
+    Endpoint = new Uri(configuration["StudyRag:Endpoint"] ?? "http://localhost:11434"),
+    ChatModel = configuration["StudyRag:ChatModel"] ?? "qwen3.5",
+    EmbeddingModel = configuration["StudyRag:EmbeddingModel"] ?? "nomic-embed-text",
+    RequestTimeout = TimeSpan.Parse(configuration["StudyRag:RequestTimeout"] ?? "00:10:00"),
+    MinimumLogLevel = Enum.Parse<LogLevel>(configuration["Logging:LogLevel:Default"] ?? "Debug")
+};
+
 var registrations = new ServiceCollection();
 
 registrations.AddSingleton(settings);
@@ -36,7 +50,7 @@ registrations.AddSingleton<Action<ChatOptions>>(_ => options =>
     options.RawRepresentationFactory = _ => new ChatRequest { Think = false });
 
 registrations.AddLogging(logging => logging
-    .SetMinimumLevel(LogLevel.Trace)
+    .SetMinimumLevel(settings.MinimumLogLevel)
     .AddFilter("Microsoft", LogLevel.Warning)
     .AddSimpleConsole(options =>
     {

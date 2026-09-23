@@ -25,10 +25,10 @@ public class IndexingService(
         var timer = Stopwatch.StartNew();
         logger?.LogInformation("Indexing documents in {Directory}.", directoryPath);
 
-        var paths = Directory.EnumerateFiles(directoryPath, "1.6*.md", SearchOption.AllDirectories)
-            //.Where(path => Path.GetExtension(path).Equals(".txt", StringComparison.OrdinalIgnoreCase) ||
-            //               Path.GetExtension(path).Equals(".md", StringComparison.OrdinalIgnoreCase))
-            //.OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+        var paths = Directory.EnumerateFiles(directoryPath, "*", SearchOption.AllDirectories)
+            .Where(path => Path.GetExtension(path).Equals(".txt", StringComparison.OrdinalIgnoreCase) ||
+                           Path.GetExtension(path).Equals(".md", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
         logger?.LogDebug("Discovered {Count} matching files.", paths.Length);
